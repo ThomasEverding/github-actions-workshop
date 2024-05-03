@@ -45,8 +45,8 @@ export default defineConfig(({ mode }) => {
                 // Apps to distribute as .js files for embedded use cases
                 apps: []
             }),
-            react(),
-            eslint()
+            react()
+            //eslint()
         ],
 
         // define global constants
