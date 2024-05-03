@@ -4,6 +4,11 @@ name: Build and deploy
 on:
   push:
   workflow_dispatch:
+    
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
   build:
@@ -40,3 +45,27 @@ jobs:
       # - Build the application (pnpm build)
       # - Create an artifact (archive) that contains the dist/www directoy using actions/upload-artifact@v4
       # - In a separate job, deploy the content of that archive to GitHub Pages
+
+  # Single deploy job since we're just deploying
+  deploy:
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: my-artifact
+      - name: Display structure of downloaded files
+        run: ls -R
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Upload entire repository
+          path: '.'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
